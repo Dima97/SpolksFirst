@@ -9,18 +9,19 @@ import java.net.SocketException;
 
 public class Connection {
     private static Connection instance;
+    private Commands commands = new Commands();
 
     private Connection() {
     }
 
-    public static Connection getConnection(){
-        if(instance == null){
+    public static Connection getConnection() {
+        if (instance == null) {
             instance = new Connection();
         }
         return instance;
     }
 
-    public void connectWithClient(){
+    public void connectWithClient() {
         int port = 6666;
         ServerSocket serverSocket = null;
         while (true) {
@@ -40,14 +41,7 @@ public class Connection {
                 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
                 String line = "";
-                while (close(line, socket, serverSocket)) {
-                    if (socket.isBound()) {
-                        line = in.readUTF();
-                    }
-
-                    System.out.println("Waiting...");
-                    System.out.println();
-                }
+                menu(socket, serverSocket);
             } catch (SocketException e) {
                 if (serverSocket != null) {
                     try {
@@ -59,6 +53,39 @@ public class Connection {
             } catch (Exception x) {
                 x.printStackTrace();
             }
+        }
+    }
+
+    public void menu(Socket socket, ServerSocket serverSocket) throws IOException {
+        DataInputStream in = new DataInputStream(socket.getInputStream());
+        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+
+        String line = "";
+        while (close(line, socket, serverSocket)) {
+            if (socket.isBound()) {
+                line = in.readUTF();
+            }
+            System.out.println("received data: " + line);
+            switch (line.split(" ")[0]) {
+                case "DOWNLOAD": {
+                    commands.download(line, out, in);
+                    break;
+                }
+                case "ECHO": {
+                    commands.echo(line, out);
+                    break;
+                }
+                case "TIME\n": {
+                    commands.time(out);
+                    break;
+                }
+                default: {
+                    System.out.println("Command not found");
+                }
+            }
+
+            System.out.println("Waiting...");
+            System.out.println();
         }
     }
 
