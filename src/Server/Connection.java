@@ -37,11 +37,8 @@ public class Connection {
                 socket.setKeepAlive(true);
                 System.out.println("Client connected");
 
-                DataInputStream in = new DataInputStream(socket.getInputStream());
-                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-
-                String line = "";
                 menu(socket, serverSocket);
+
             } catch (SocketException e) {
                 if (serverSocket != null) {
                     try {
