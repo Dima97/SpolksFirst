@@ -1,11 +1,10 @@
 package Client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.UUID;
 
 import static java.lang.System.exit;
 
@@ -14,6 +13,52 @@ public class Connection {
     int serverPort = 6666;
     String address = null;
     BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+
+    public void sendUnigueID(Socket socket) {
+        try {
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+
+            out.writeUTF(createKey());
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public String createKey() {
+        File storeID = new File("uniqueID.txt");
+        if (storeID.exists()) {
+            try {
+                FileInputStream inputStream = new FileInputStream(storeID);
+                byte[] data = new byte[(int) storeID.length()];
+                inputStream.read(data);
+                inputStream.close();
+                return new String(data, "UTF-8");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            String uniqueID = UUID.randomUUID().toString();
+            try {
+                storeID.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                FileOutputStream outputStream = new FileOutputStream(storeID);
+                PrintStream outKey = new PrintStream(outputStream);
+                outKey.print(uniqueID);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            return uniqueID;
+        }
+        return null;
+    }
+
     public Socket connect() {
         System.out.print("input Server ip \n>");
         while (true) {
@@ -27,31 +72,38 @@ public class Connection {
         try {
             InetAddress ipAddress = InetAddress.getByName(address);
             Socket socket = null;
-            for (int i = 1; i <= 3; i++){
+            for (int i = 1; i <= 3; i++) {
                 try {
                     socket = new Socket(ipAddress, serverPort);
                     socket.setKeepAlive(true);
                     break;
-                }catch (ConnectException e){
+                } catch (ConnectException e) {
                     System.out.println("Attempt " + i);
                     socket = null;
                     Thread.sleep(500);
                 }
             }
-            if(socket == null){
+            if (socket == null) {
                 System.out.println("not connected");
                 exit(1);
             }
             System.out.println("Connect");
+            sendUnigueID(socket);
             return socket;
-        }  catch (Exception x) {
+        } catch (Exception x) {
             x.printStackTrace();
         }
         return null;
     }
 
+    public void removeUniqueIDFile(){
+        File storeID = new File("uniqueID.txt");
+        storeID.delete();
+    }
+
     public void close(String line, Socket socket) throws IOException, InterruptedException {
-        if(line.equals("CLOSE\n")) {
+        if (line.equals("CLOSE\n")) {
+            removeUniqueIDFile();
             System.out.println("close socket");
             Thread.sleep(10);
             socket.close();
