@@ -9,7 +9,7 @@ public class Commands {
         System.out.println("The client downloads a file");
         line = line.replace("DOWNLOAD ", "");
         File file = new File(line);
-        byte[] b = new byte[1];//65536
+        byte[] b = new byte[256];//65536
         if (file.length() > 0) {
             out.writeUTF("true");
             DataInputStream reader = new DataInputStream(new FileInputStream(file));
@@ -22,20 +22,15 @@ public class Commands {
             while (true) {
                 length = reader.read(b);
                 if (length <= 0) {
-//                    connection.getResumeStorage().removeCurrentFile(line);
                     break;
                 }
 
-                try {
-                    Thread.sleep(10);
+                if(in.readBoolean()) {
                     out.write(b, 0, length);
                     out.flush();
                     progress += b.length;
                     connection.getResumeStorage().refreshResume(line, progress);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
-
             }
             reader.close();
         }
