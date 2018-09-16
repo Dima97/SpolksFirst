@@ -10,6 +10,7 @@ import java.net.SocketException;
 public class Connection {
     private static Connection instance;
     private Commands commands = new Commands();
+    private ResumeStorage resumeStorage = new ResumeStorage();
 
     private Connection() {
     }
@@ -37,6 +38,7 @@ public class Connection {
                 socket.setKeepAlive(true);
                 System.out.println("Client connected");
 
+                readUniqueId(socket);
                 menu(socket, serverSocket);
 
             } catch (SocketException e) {
@@ -53,6 +55,17 @@ public class Connection {
         }
     }
 
+    public void readUniqueId(Socket socket) {
+        try {
+
+            DataInputStream socketInputStream = new DataInputStream(socket.getInputStream());
+            resumeStorage.setClientsResumeID(socketInputStream.readUTF());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void menu(Socket socket, ServerSocket serverSocket) throws IOException {
         DataInputStream in = new DataInputStream(socket.getInputStream());
         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -65,7 +78,7 @@ public class Connection {
             System.out.println("received data: " + line);
             switch (line.split(" ")[0]) {
                 case "DOWNLOAD": {
-                    commands.download(line, out, in);
+                    commands.download(line, out, in, this);
                     break;
                 }
                 case "ECHO": {
@@ -86,8 +99,9 @@ public class Connection {
         }
     }
 
-    private static boolean close(String line, Socket socket, ServerSocket ss) throws IOException {
+    private boolean close(String line, Socket socket, ServerSocket ss) throws IOException {
         if (line.equals("CLOSE\n")) {
+            resumeStorage.deleteCurrentResume();
             System.out.println("close socket");
             if (socket != null && ss != null) {
                 socket.close();
@@ -96,5 +110,9 @@ public class Connection {
             return false;
         }
         return true;
+    }
+
+    public ResumeStorage getResumeStorage(){
+        return  resumeStorage;
     }
 }
