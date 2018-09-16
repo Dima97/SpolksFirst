@@ -23,25 +23,31 @@ public class Commands {
                 echo(line, in);
                 time(line, in);
                 connection.close(line, socket);
-                download(line, in, socket);
+                download(line, out, in, socket);
             }
         } catch (Exception x) {
             x.printStackTrace();
         }
     }
 
-    private void download(String line, DataInputStream in, Socket socket) throws IOException {
+    private void download(String line,DataOutputStream out, DataInputStream in, Socket socket) throws IOException {
         if(line.contains("DOWNLOAD")) {
             if (in.readUTF().equals("true")) {
                 line = line.replace("DOWNLOAD ", "");
-                File file = new File("1" + line);
-                DataOutputStream writer = new DataOutputStream(new FileOutputStream(file));
-                byte[] b = new byte[65536];
+
+                byte[] b = new byte[256];
                 long size = Long.parseLong(in.readUTF());
+                long progress = Long.parseLong(in.readUTF());
+
+                File file = new File(line);
+                DataOutputStream writer = new DataOutputStream(new FileOutputStream(file, true));
+
                 int length = 0;
+                out.writeBoolean(true);
                 while (file.length() < size) {
                     length = in.read(b);
                     writer.write(b, 0, length);
+                    out.writeBoolean(true);
                     progress(file.length(), size);
                 }
                 writer.close();
