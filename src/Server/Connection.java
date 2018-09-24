@@ -89,6 +89,10 @@ public class Connection {
                     commands.time(out);
                     break;
                 }
+                case "CLOSE\n": {
+                    this.close(line, socket, serverSocket);
+                    break;
+                }
                 default: {
                     System.out.println("Command not found");
                 }
