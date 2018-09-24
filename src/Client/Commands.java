@@ -35,7 +35,7 @@ public class Commands {
             if (in.readUTF().equals("true")) {
                 line = line.replace("DOWNLOAD ", "");
 
-                byte[] b = new byte[256];
+                byte[] b = new byte[65536];
                 long size = Long.parseLong(in.readUTF());
 
                 File file = new File(line);

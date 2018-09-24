@@ -9,7 +9,7 @@ public class Commands {
         System.out.println("The client downloads a file");
         line = line.replace("DOWNLOAD ", "");
         File file = new File(line);
-        byte[] b = new byte[256];//65536
+        byte[] b = new byte[65536];
         if (file.length() > 0) {
             out.writeUTF("true");
             DataInputStream reader = new DataInputStream(new FileInputStream(file));
