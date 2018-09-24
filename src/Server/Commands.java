@@ -15,16 +15,21 @@ public class Commands {
             DataInputStream reader = new DataInputStream(new FileInputStream(file));
             out.writeUTF(String.valueOf(file.length()));
             out.flush();
-            int length = 0, progress = connection.getResumeStorage().getProgress(line);
+
+            int progress = Integer.parseInt(in.readUTF());
+            int length = 0;
             reader.skipBytes(progress);
-            out.writeUTF(String.valueOf(progress));
-            out.flush();
             while (true) {
                 length = reader.read(b);
                 if (length <= 0) {
                     break;
                 }
 
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 if(in.readBoolean()) {
                     out.write(b, 0, length);
                     out.flush();

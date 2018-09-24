@@ -37,11 +37,13 @@ public class Commands {
 
                 byte[] b = new byte[256];
                 long size = Long.parseLong(in.readUTF());
-                long progress = Long.parseLong(in.readUTF());
 
                 File file = new File(line);
                 DataOutputStream writer = new DataOutputStream(new FileOutputStream(file, true));
 
+                int progress = (int) file.length();
+                out.writeUTF(String.valueOf(progress));
+                out.flush();
                 int length = 0;
                 out.writeBoolean(true);
                 while (file.length() < size) {
@@ -56,6 +58,8 @@ public class Commands {
             }
         }
     }
+
+//>DOWNLOAD ololo.png     127.0.0.1
 
     private void progress(long length, long size){
         progress = (length*100/size);
