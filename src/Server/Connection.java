@@ -2,6 +2,7 @@ package Server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -41,7 +42,10 @@ public class Connection {
                 readUniqueId(socket);
                 menu(socket, serverSocket);
 
-            } catch (SocketException e) {
+            }catch(EOFException exc){
+                System.out.println("client down!");
+            }
+            catch (SocketException e) {
                 if (serverSocket != null) {
                     try {
                         serverSocket.close();
@@ -74,6 +78,7 @@ public class Connection {
         while (close(line, socket, serverSocket)) {
             if (socket.isBound()) {
                 line = in.readUTF();
+                System.out.println(line);
             }
             System.out.println("received data: " + line);
             switch (line.split(" ")[0]) {
@@ -87,10 +92,6 @@ public class Connection {
                 }
                 case "TIME\n": {
                     commands.time(out);
-                    break;
-                }
-                case "CLOSE\n": {
-                    this.close(line, socket, serverSocket);
                     break;
                 }
                 default: {

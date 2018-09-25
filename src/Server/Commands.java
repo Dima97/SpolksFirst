@@ -6,7 +6,6 @@ import java.util.Date;
 public class Commands {
 
     public void download(String line, DataOutputStream out, DataInputStream in, Connection connection) throws IOException {
-        System.out.println("The client downloads a file");
         line = line.replace("DOWNLOAD ", "");
         File file = new File(line);
         byte[] b = new byte[65536];
@@ -25,11 +24,6 @@ public class Commands {
                     break;
                 }
 
-                try {
-                    Thread.sleep(5);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 if(in.readBoolean()) {
                     out.write(b, 0, length);
                     out.flush();
@@ -39,6 +33,7 @@ public class Commands {
             }
             reader.close();
         }
+        System.out.println("The client downloaded a file");
     }
 
     public String echo(String line, DataOutputStream out) throws IOException {

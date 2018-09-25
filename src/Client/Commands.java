@@ -26,7 +26,7 @@ public class Commands {
                 download(line, out, in, socket);
             }
         } catch (Exception x) {
-            x.printStackTrace();
+           System.out.println("server down!");
         }
     }
 
@@ -57,9 +57,8 @@ public class Commands {
                 System.out.println("there is no such file");
             }
         }
+        System.out.println();
     }
-
-//>DOWNLOAD ololo.png     127.0.0.1
 
     private void progress(long length, long size){
         progress = (length*100/size);
