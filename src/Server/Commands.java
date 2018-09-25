@@ -17,19 +17,17 @@ public class Commands {
 
             int progress = Integer.parseInt(in.readUTF());
             int length = 0;
-            reader.skipBytes(progress);
+            reader.skipBytes(progress - 1);
             while (true) {
                 length = reader.read(b);
                 if (length <= 0) {
                     break;
                 }
 
-                if(in.readBoolean()) {
-                    out.write(b, 0, length);
-                    out.flush();
-                    progress += b.length;
-                    connection.getResumeStorage().refreshResume(line, progress);
-                }
+                out.write(b, 0, length);
+                out.flush();
+                progress += b.length;
+                connection.getResumeStorage().refreshResume(line, progress);
             }
             reader.close();
         }
@@ -43,7 +41,7 @@ public class Commands {
         return line;
     }
 
-    public void time( DataOutputStream out) throws IOException {
+    public void time(DataOutputStream out) throws IOException {
         Date date = new Date();
         out.writeUTF(date.toString());
         out.flush();

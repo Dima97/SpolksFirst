@@ -26,12 +26,12 @@ public class Commands {
                 download(line, out, in, socket);
             }
         } catch (Exception x) {
-           System.out.println("server down!");
+            System.out.println("server down!");
         }
     }
 
-    private void download(String line,DataOutputStream out, DataInputStream in, Socket socket) throws IOException {
-        if(line.contains("DOWNLOAD")) {
+    private void download(String line, DataOutputStream out, DataInputStream in, Socket socket) throws IOException {
+        if (line.contains("DOWNLOAD")) {
             if (in.readUTF().equals("true")) {
                 line = line.replace("DOWNLOAD ", "");
 
@@ -45,24 +45,22 @@ public class Commands {
                 out.writeUTF(String.valueOf(progress));
                 out.flush();
                 int length = 0;
-                out.writeBoolean(true);
                 while (file.length() < size) {
                     length = in.read(b);
                     writer.write(b, 0, length);
-                    out.writeBoolean(true);
                     progress(file.length(), size);
                 }
                 writer.close();
-            }else {
+            } else {
                 System.out.println("there is no such file");
             }
         }
         System.out.println();
     }
 
-    private void progress(long length, long size){
-        progress = (length*100/size);
-        if(progress % 1 == 0 && progress != oldProgress) {
+    private void progress(long length, long size) {
+        progress = (length * 100 / size);
+        if (progress % 1 == 0 && progress != oldProgress) {
             System.out.print('\r');
             System.out.print("Progress: " + progress + "%");
             oldProgress = progress;
@@ -70,21 +68,21 @@ public class Commands {
     }
 
     private String command(String line) {
-        if(line.contains("ECHO") || line.equals("TIME") || line.equals("CLOSE")) {
+        if (line.contains("ECHO") || line.equals("TIME") || line.equals("CLOSE")) {
             return new String(line + "\n");
         }
         return line;
     }
 
     private void time(String line, DataInputStream in) throws IOException {
-        if(line.equals("TIME\n")) {
+        if (line.equals("TIME\n")) {
             line = in.readUTF();
             System.out.println("Time: " + line);
         }
     }
 
     private void echo(String line, DataInputStream in) throws IOException {
-        if(line.contains("ECHO")) {
+        if (line.contains("ECHO")) {
             line = in.readUTF();
             System.out.println("Echo: " + line.split(" ")[1]);
         }
