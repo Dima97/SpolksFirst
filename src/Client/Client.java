@@ -1,12 +1,16 @@
 package Client;
 
+import Client.TCP.CommandsTCP;
+import Client.TCP.ConnectionTCP;
+import Server.UDP.ConnectionUDP;
+
 import java.net.Socket;
 
 public class Client {
     public static void main(String[] argv) {
-        Connection connection = new Connection();
-        Socket socket = connection.connect();
-        Commands commands = new Commands();
-        commands.startListen(socket, connection);
+        ConnectionTCP connectionTCP = new ConnectionTCP();
+        Socket socket = connectionTCP.connect();
+        CommandsTCP commandsTCP = new CommandsTCP();
+        commandsTCP.startListen(socket, connectionTCP);
     }
 }

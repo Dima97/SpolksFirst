@@ -1,4 +1,6 @@
-package Client;
+package Client.TCP;
+
+import Client.Client;
 
 import java.io.*;
 import java.net.ConnectException;
@@ -8,7 +10,7 @@ import java.util.UUID;
 
 import static java.lang.System.exit;
 
-public class Connection {
+public class ConnectionTCP {
 
     int serverPort = 6666;
     String address = null;
@@ -60,6 +62,9 @@ public class Connection {
     }
 
     public Socket connect() {
+        BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+        int serverPort = 9876;
+        String address = null;
         System.out.print("input Server ip \n>");
         while (true) {
             try {
@@ -75,7 +80,6 @@ public class Connection {
             for (int i = 1; i <= 3; i++) {
                 try {
                     socket = new Socket(ipAddress, serverPort);
-                    socket.setKeepAlive(true);
                     break;
                 } catch (ConnectException e) {
                     System.out.println("Attempt " + i);
@@ -88,7 +92,6 @@ public class Connection {
                 exit(1);
             }
             System.out.println("Connect");
-            sendUnigueID(socket);
             return socket;
         } catch (Exception x) {
             x.printStackTrace();

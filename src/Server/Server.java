@@ -1,12 +1,18 @@
 package Server;
 
-import java.io.*;
-import java.net.*;
-import java.util.Date;
+import Server.TCP.ConnectionTCP;
+import Server.UDP.ConnectionUDP;
+
+import java.io.IOException;
 
 public class Server {
     public static void main(String[] argv) {
-        Connection connection = Connection.getConnection();
-        connection.connectWithClient();
+        ConnectionTCP connectionTCP = ConnectionTCP.getConnection();
+        try {
+            connectionTCP.connectWithClient();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 }
